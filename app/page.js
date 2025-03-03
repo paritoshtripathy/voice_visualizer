@@ -1,4 +1,4 @@
-"use client"; // Required for state management in Next.js App Router
+"use client";
 
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -54,11 +54,28 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6 bg-gray-200 min-h-screen text-gray-900">
-      <h1 className="text-2xl font-bold mb-4">Audio Upload</h1>
-
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 text-gray-900">
+      <h1 className="text-3xl font-bold mb-8">Welcome to the Audio App</h1>
+      
+      <div className="grid grid-cols-1 gap-6 w-80 mb-8">
+        <Link href="/voice-visualizer">
+          <button className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-blue-600 w-full">
+            🎤 Go to Voice Visualizer
+          </button>
+        </Link>
+        
+        <button className="bg-gray-400 text-white px-6 py-3 rounded-lg shadow-lg w-full cursor-not-allowed">
+          🚧 Feature Placeholder 1
+        </button>
+        
+        <button className="bg-gray-400 text-white px-6 py-3 rounded-lg shadow-lg w-full cursor-not-allowed">
+          🚧 Feature Placeholder 2
+        </button>
+      </div>
+      
       {/* File Upload Section */}
       <div className="bg-white p-6 rounded-lg shadow-md w-96 text-center">
+        <h2 className="text-xl font-semibold mb-4">Upload Audio</h2>
         <input 
           type="file" 
           accept="audio/*" 
@@ -73,9 +90,9 @@ export default function Home() {
         </button>
         {message && <p className="text-green-600 mt-2">{message}</p>}
       </div>
-
+      
       <hr className="w-96 my-6 border-gray-400" />
-
+      
       {/* Uploaded Files Section */}
       <h2 className="text-xl font-semibold mb-3 text-gray-900">Uploaded Files</h2>
       {uploadedFiles.length === 0 ? (
@@ -97,13 +114,6 @@ export default function Home() {
           ))}
         </ul>
       )}
-
-      {/* Link to Voice Visualizer Page */}
-      <Link href="/voice-visualizer">
-        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Go to Voice Visualizer
-        </button>
-      </Link>
     </div>
   );
 }
