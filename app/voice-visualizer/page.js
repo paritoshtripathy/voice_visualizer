@@ -1,4 +1,4 @@
-"use client"; // Required for Next.js App Router
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 
@@ -8,6 +8,7 @@ export default function VoiceVisualizer() {
   const analyserRef = useRef(null);
   const dataArrayRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedPattern, setSelectedPattern] = useState("waveform");
 
   useEffect(() => {
     if (!isRecording) return;
@@ -28,7 +29,7 @@ export default function VoiceVisualizer() {
       analyserRef.current = analyser;
       dataArrayRef.current = dataArray;
 
-      drawWaveform();
+      drawVisualization();
     };
 
     startAudio();
@@ -36,9 +37,9 @@ export default function VoiceVisualizer() {
     return () => {
       audioContextRef.current?.close();
     };
-  }, [isRecording]);
+  }, [isRecording, selectedPattern]);
 
-  const drawWaveform = () => {
+  const drawVisualization = () => {
     if (!canvasRef.current || !analyserRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -49,45 +50,98 @@ export default function VoiceVisualizer() {
 
       analyserRef.current.getByteTimeDomainData(dataArrayRef.current);
 
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "lime";
-      ctx.beginPath();
-
-      const sliceWidth = canvas.width / dataArrayRef.current.length;
-      let x = 0;
-
-      for (let i = 0; i < dataArrayRef.current.length; i++) {
-        const v = dataArrayRef.current[i] / 128.0;
-        const y = v * canvas.height / 2;
-
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-
-        x += sliceWidth;
+      switch (selectedPattern) {
+        case "waveform":
+          drawWaveform(ctx, canvas);
+          break;
+        case "bar-spectrum":
+          drawBarSpectrum(ctx, canvas);
+          break;
+        case "circular-wave":
+          drawCircularWave(ctx, canvas);
+          break;
       }
-
-      ctx.lineTo(canvas.width, canvas.height / 2);
-      ctx.stroke();
     };
-
     render();
   };
 
+  // 🔹 **Waveform Visualization**
+  const drawWaveform = (ctx, canvas) => {
+    ctx.strokeStyle = "lime";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const sliceWidth = canvas.width / dataArrayRef.current.length;
+    let x = 0;
+
+    for (let i = 0; i < dataArrayRef.current.length; i++) {
+      const v = dataArrayRef.current[i] / 128.0;
+      const y = v * canvas.height / 2;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      x += sliceWidth;
+    }
+    ctx.stroke();
+  };
+
+  // 🔹 **Bar Spectrum Visualization**
+  const drawBarSpectrum = (ctx, canvas) => {
+    const barWidth = (canvas.width / dataArrayRef.current.length) * 2.5;
+    let x = 0;
+    ctx.fillStyle = "cyan";
+    for (let i = 0; i < dataArrayRef.current.length; i++) {
+      const barHeight = dataArrayRef.current[i] * 1.5;
+      ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight);
+      x += barWidth + 1;
+    }
+  };
+
+  // 🔹 **Circular Wave Visualization**
+  const drawCircularWave = (ctx, canvas) => {
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) / 2;
+    ctx.strokeStyle = "purple";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < dataArrayRef.current.length; i++) {
+      const angle = (i / dataArrayRef.current.length) * Math.PI * 2;
+      const amp = dataArrayRef.current[i] / 255.0;
+      const x = centerX + Math.cos(angle) * (radius + amp * 50);
+      const y = centerY + Math.sin(angle) * (radius + amp * 50);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  };
+
   return (
-    <div className="flex flex-col items-center p-6 bg-gray-100 min-h-screen text-gray-900">
-      <h1 className="text-2xl font-bold mb-4">Voice Waveform Visualizer</h1>
-      
-      <canvas ref={canvasRef} width={600} height={200} className="border bg-black rounded-lg"></canvas>
+    <div className="flex flex-col items-center p-8 bg-gradient-to-br from-blue-500 to-purple-700 min-h-screen text-white">
+      <h1 className="text-4xl font-bold mb-6 shadow-md">Voice Visualizer</h1>
+
+      <div className="flex space-x-4 mb-6">
+        {["waveform", "bar-spectrum", "circular-wave"].map((pattern) => (
+          <button
+            key={pattern}
+            onClick={() => setSelectedPattern(pattern)}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              selectedPattern === pattern ? "bg-green-500 text-white shadow-lg" : "bg-gray-300 text-black hover:bg-gray-400"
+            }`}
+          >
+            {pattern.replace("-", " ")}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-black p-4 rounded-lg shadow-lg">
+        <canvas ref={canvasRef} width={600} height={300} className="border rounded-lg"></canvas>
+      </div>
 
       <button
         onClick={() => setIsRecording(!isRecording)}
-        className={`mt-4 px-6 py-2 text-white font-semibold rounded-lg ${isRecording ? "bg-red-500" : "bg-green-500"} hover:opacity-80`}
+        className={`mt-6 px-8 py-3 text-white font-semibold rounded-lg shadow-lg transition-all ${
+          isRecording ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
+        }`}
       >
         {isRecording ? "Stop Recording" : "Start Recording"}
       </button>
