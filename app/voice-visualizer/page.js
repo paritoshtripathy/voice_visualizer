@@ -53,6 +53,10 @@ export default function VoiceVisualizer() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Add a glowing background effect to the canvas
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = "rgba(0, 255, 150, 0.5)";
+
       switch (selectedPattern) {
         case "waveform":
           drawWaveform(ctx, canvas);
@@ -150,13 +154,13 @@ export default function VoiceVisualizer() {
         ))}
       </div>
 
-      {/* Canvas Section */}
+      {/* Canvas Section with Glowing Effect */}
       <div
         className={`p-4 rounded-lg shadow-lg border-4 transition-all ${
           darkMode ? "bg-gray-800 border-gray-700" : "bg-black border-gray-500"
         }`}
       >
-        <canvas ref={canvasRef} width={600} height={300} className="border rounded-lg"></canvas>
+        <canvas ref={canvasRef} width={600} height={300} className="border rounded-lg shadow-xl"></canvas>
       </div>
 
       {/* Recording Button */}
