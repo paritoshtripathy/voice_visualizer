@@ -118,20 +118,20 @@ export default function VoiceVisualizer() {
 
   return (
     <div
-      className={`flex flex-col items-center p-8 min-h-screen transition-all ${
+      className={`flex flex-col items-center p-8 min-h-screen transition-all relative ${
         darkMode ? "bg-gray-900 text-white" : "bg-gradient-to-br from-blue-500 to-purple-700 text-black"
       }`}
     >
-      {/* Title & Dark Mode Toggle */}
-      <div className="flex flex-col items-center w-full max-w-2xl mb-4">
-        <h1 className="text-4xl font-bold mb-6 shadow-md drop-shadow-lg text-center">Voice Visualizer</h1>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="px-4 py-2 rounded-lg font-semibold shadow-md transition-all bg-gray-300 text-black hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
-        >
-          {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button>
-      </div>
+      {/* Dark Mode Toggle Positioned at Top Right */}
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="absolute top-4 right-4 px-4 py-2 rounded-lg font-semibold shadow-md transition-all bg-gray-300 text-black hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+      >
+        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+      </button>
+
+      {/* Title */}
+      <h1 className="text-4xl font-bold mb-6 shadow-md drop-shadow-lg text-center mt-8">Voice Visualizer</h1>
 
       {/* Pattern Selection Buttons */}
       <div className="flex space-x-4 mb-6">
@@ -173,3 +173,4 @@ export default function VoiceVisualizer() {
     </div>
   );
 }
+
