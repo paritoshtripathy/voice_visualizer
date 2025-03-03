@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Overview
+This project consists of a **FastAPI backend** and a **Next.js frontend**. The backend handles file uploads and stores metadata in a MySQL database, while the frontend provides an interface for users to upload audio files and visualize voice waveforms.
 
-## Getting Started
+---
 
-First, run the development server:
+## Backend (FastAPI)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### **1️⃣ Setup & Run Backend**
+#### **Prerequisites:**
+- Python 3.9+
+- Docker (for MySQL)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### **Steps to Run**
+1. **Create a virtual environment** (optional but recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **Start MySQL in Docker:**
+   ```bash
+   docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=rootpassword \
+       -e MYSQL_DATABASE=mydatabase -e MYSQL_USER=user -e MYSQL_PASSWORD=password \
+       -p 3306:3306 -d mysql:8
+   ```
+4. **Run the FastAPI server:**
+   ```bash
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+5. **Test API in Browser/Postman:**
+   - Open `http://localhost:8000/docs` for API documentation.
+   - Upload a file via `POST /upload-audio/`
+   - Fetch uploaded files via `GET /uploaded-files/`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Frontend (Next.js)
 
-## Learn More
+### **2️⃣ Setup & Run Frontend**
+#### **Prerequisites:**
+- Node.js 18+
+- npm or yarn
 
-To learn more about Next.js, take a look at the following resources:
+#### **Steps to Run**
+1. **Navigate to frontend directory:**
+   ```bash
+   cd myapp-frontend
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Start the Next.js development server:**
+   ```bash
+   npm run dev
+   ```
+4. **Open the frontend in your browser:**
+   - `http://localhost:3000/` → Audio Upload UI
+   - `http://localhost:3000/voice-visualizer` → Voice Visualization UI
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Features
+✅ Upload audio files from frontend to FastAPI backend
+✅ Store file metadata in MySQL
+✅ List uploaded files with download links
+✅ Visualize real-time voice waveforms using Web Audio API
+✅ Navigate between upload and visualization pages
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Next Steps
+- 🎨 Improve UI with better animations and styles
+- 📊 Enhance waveform visualization with frequency analysis
+- 🎤 Enable real-time voice recording and streaming
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
